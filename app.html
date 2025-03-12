@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Review Tracker</title>
+    <style>
+        body {
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        h1, h2, h3 {
+            font-weight: 500;
+            color: #212121;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        
+        h3 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        
+        input[type="number"], input[type="text"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-right: 16px;
+            margin-bottom: 16px;
+            width: 100px;
+        }
+        
+        input[type="text"] {
+            width: 250px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            margin-bottom: 16px;
+            resize: vertical;
+            height: 100px;
+            box-sizing: border-box;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            margin-right: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .button-primary {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background-color: #1976D2;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        
+        .button-secondary {
+            background-color: #E0E0E0;
+            color: #424242;
+        }
+        
+        .button-secondary:hover {
+            background-color: #BDBDBD;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        
+        .button-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .button-success:hover {
+            background-color: #388E3C;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        
+        .button-warning {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .button-warning:hover {
+            background-color: #F57C00;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        
+        #progress-container {
+            margin: 20px 0;
+            background-color: #E0E0E0;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            background-color: #2196F3;
+            width: 0;
+            transition: width 0.3s;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background-color: #FAFAFA;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            margin: 0 8px 16px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        
+        .stat-box h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #757575;
+            font-weight: normal;
+        }
+        
+        .stat-box p {
+            margin: 8px 0 0;
+            font-size: 24px;
+            font-weight: 500;
+            color: #212121;
+        }
+        
+        .review-entry {
+            margin: 8px 0;
+            padding: 12px;
+            background-color: #FAFAFA;
+            border-left: 4px solid #2196F3;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .review-entry.has-remark {
+            border-left-color: #FF9800;
+        }
+        
+        #review-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 8px;
+            border: 1px solid #EEEEEE;
+            border-radius: 4px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .feedback-area {
+            background-color: #F5F5F5;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .notification {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .notification.success {
+            background-color: #E8F5E9;
+            border-left-color: #4CAF50;
+        }
+        
+        @media (max-width: 600px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                margin-right: 0;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Slide Review Tracker</h1>
+    
+    <div id="setup" class="card">
+        <h2>Setup Your Review</h2>
+        <div class="form-group">
+            <label for="total-slides">How many slides are you going to review?</label>
+            <input type="number" id="total-slides" min="1" value="500">
+        </div>
+        <div class="form-group">
+            <label for="project-name">Project Name (for saving file):</label>
+            <input type="text" id="project-name" value="slide_review">
+        </div>
+        <button class="button button-primary" onclick="startReview()">Start Review</button>
+        <button class="button button-secondary" onclick="loadExistingReview()">Load Existing Review</button>
+    </div>
+    
+    <div id="review-form" class="card" style="display:none;">
+        <h2>Review Slide</h2>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Current Slide</h3>
+                <p id="current-slide">1</p>
+            </div>
+            <div class="stat-box">
+                <h3>Slides Remaining</h3>
+                <p id="slides-remaining">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Completed</h3>
+                <p id="percent-complete">0%</p>
+            </div>
+        </div>
+        
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="slide-number">Slide Number:</label>
+            <input type="number" id="slide-number" min="1" value="1">
+        </div>
+        
+        <div class="feedback-area">
+            <label for="slide-feedback">Remarks (leave empty if slide is fine):</label>
+            <textarea id="slide-feedback" placeholder="Enter remarks if needed, or leave empty if slide is fine..."></textarea>
+            
+            <div class="action-bar">
+                <div>
+                    <button class="button button-success" onclick="saveReview()">Save & Next</button>
+                    <button class="button button-secondary" onclick="skipToSlide()">Skip to Slide</button>
+                    <button class="button button-warning" onclick="downloadCurrentProgress()">Save Progress</button>
+                </div>
+                <div id="slide-status" style="padding-top: 10px; color: #757575;"></div>
+            </div>
+        </div>
+        
+        <div id="save-notification" class="notification" style="display:none;">
+            Review progress is automatically saved after each slide.
+        </div>
+    </div>
+    
+    <div id="review-complete" class="card" style="display:none;">
+        <h2>Review Summary</h2>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Total Slides</h3>
+                <p id="summary-total">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Slides OK</h3>
+                <p id="summary-ok">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Slides With Remarks</h3>
+                <p id="summary-remarks">0</p>
+            </div>
+        </div>
+        
+        <h3>Review Results</h3>
+        <div id="review-results">
+            <!-- Results will be populated here -->
+        </div>
+        
+        <div class="action-bar">
+            <button class="button button-primary" onclick="downloadReport()">Download Report</button>
+            <button class="button button-secondary" onclick="resetApp()">Start New Review</button>
+        </div>
+    </div>
+    
+    <input type="file" id="file-input" style="display: none;" accept=".txt">
+    
+    <script>
+        let totalSlides = 0;
+        let currentSlide = 1;
+        let reviews = {};
+        let slidesOk = 0;
+        let slidesWithRemarks = 0;
+        let projectName = "slide_review";
+        
+        // Initialize app
+        function startReview() {
+            totalSlides = parseInt(document.getElementById('total-slides').value);
+            projectName = document.getElementById('project-name').value.trim() || "slide_review";
+            
+            if (totalSlides < 1) {
+                alert('Please enter a valid number of slides');
+                return;
+            }
+            
+            currentSlide = 1;
+            reviews = {};
+            slidesOk = 0;
+            slidesWithRemarks = 0;
+            
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('review-form').style.display = 'block';
+            document.getElementById('slide-number').value = currentSlide;
+            document.getElementById('save-notification').style.display = 'block';
+            
+            // Auto-hide notification after 5 seconds
+            setTimeout(() => {
+                document.getElementById('save-notification').style.display = 'none';
+            }, 5000);
+            
+            updateProgress();
+        }
+        
+        // Save an individual slide review
+        function saveReview() {
+            const slideNumber = parseInt(document.getElementById('slide-number').value);
+            const feedback = document.getElementById('slide-feedback').value.trim();
+            
+            // Store the review
+            reviews[slideNumber] = {
+                hasRemark: feedback !== '',
+                feedback: feedback !== '' ? feedback : 'Everything is Fine'
+                // Timestamp removed as requested
+            };
+            
+            if (feedback === '') {
+                slidesOk++;
+                document.getElementById('slide-status').textContent = 'Saved: Everything is Fine';
+            } else {
+                slidesWithRemarks++;
+                document.getElementById('slide-status').textContent = 'Saved: Remarks added';
+            }
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Reset form for next slide
+            currentSlide = slideNumber + 1;
+            document.getElementById('slide-number').value = currentSlide;
+            document.getElementById('slide-feedback').value = '';
+            
+            // Show status briefly then clear
+            setTimeout(() => {
+                document.getElementById('slide-status').textContent = '';
+            }, 2000);
+            
+            updateProgress();
+            
+            // Check if review is complete
+            if (Object.keys(reviews).length >= totalSlides) {
+                completeReview();
+            }
+        }
+        
+        // Skip to a specific slide
+        function skipToSlide() {
+            const slideNumber = parseInt(document.getElementById('slide-number').value);
+            if (slideNumber < 1 || slideNumber > totalSlides) {
+                alert(`Please enter a valid slide number between 1 and ${totalSlides}`);
+                return;
+            }
+            currentSlide = slideNumber;
+            document.getElementById('slide-number').value = currentSlide;
+            
+            // If we already reviewed this slide, load its feedback
+            if (reviews[currentSlide]) {
+                const review = reviews[currentSlide];
+                document.getElementById('slide-feedback').value = 
+                    review.hasRemark ? review.feedback : '';
+            } else {
+                document.getElementById('slide-feedback').value = '';
+            }
+            
+            updateProgress();
+        }
+        
+        // Update the progress UI
+        function updateProgress() {
+            const completed = Object.keys(reviews).length;
+            const percentage = Math.round((completed / totalSlides) * 100);
+            
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('slides-remaining').textContent = totalSlides - completed;
+            document.getElementById('percent-complete').textContent = `${percentage}%`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+        
+        // Complete the review process
+        function completeReview() {
+            document.getElementById('review-form').style.display = 'none';
+            document.getElementById('review-complete').style.display = 'block';
+            
+            document.getElementById('summary-total').textContent = totalSlides;
+            document.getElementById('summary-ok').textContent = slidesOk;
+            document.getElementById('summary-remarks').textContent = slidesWithRemarks;
+            
+            const resultsDiv = document.getElementById('review-results');
+            resultsDiv.innerHTML = '';
+            
+            // Sort slide numbers numerically
+            const slideNumbers = Object.keys(reviews).map(Number).sort((a, b) => a - b);
+            
+            for (const slideNum of slideNumbers) {
+                const review = reviews[slideNum];
+                const entry = document.createElement('div');
+                entry.className = 'review-entry' + (review.hasRemark ? ' has-remark' : '');
+                
+                entry.innerHTML = `<strong>Slide ${slideNum}:</strong> ${review.feedback}`;
+                
+                resultsDiv.appendChild(entry);
+            }
+            
+            // Save final report to localStorage
+            saveToLocalStorage();
+        }
+        
+        // Save progress to localStorage
+        function saveToLocalStorage() {
+            const reviewData = {
+                projectName: projectName,
+                totalSlides: totalSlides,
+                slidesOk: slidesOk,
+                slidesWithRemarks: slidesWithRemarks,
+                reviews: reviews,
+                lastUpdated: new Date().toISOString() // We keep this for internal tracking only
+            };
+            
+            localStorage.setItem(`slideReview_${projectName}`, JSON.stringify(reviewData));
+        }
+        
+        // Load progress from localStorage
+        function loadFromLocalStorage(projectNameToLoad) {
+            const savedData = localStorage.getItem(`slideReview_${projectNameToLoad}`);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                projectName = data.projectName;
+                totalSlides = data.totalSlides;
+                slidesOk = data.slidesOk || 0;
+                slidesWithRemarks = data.slidesWithRemarks || 0;
+                reviews = data.reviews || {};
+                
+                document.getElementById('project-name').value = projectName;
+                document.getElementById('total-slides').value = totalSlides;
+                
+                return true;
+            }
+            return false;
+        }
+        
+        // Load an existing review
+        function loadExistingReview() {
+            const projectToLoad = document.getElementById('project-name').value.trim();
+            if (!projectToLoad) {
+                alert('Please enter a project name to load');
+                return;
+            }
+            
+            if (loadFromLocalStorage(projectToLoad)) {
+                document.getElementById('setup').style.display = 'none';
+                document.getElementById('review-form').style.display = 'block';
+                
+                // Find the highest slide number reviewed
+                const slideNumbers = Object.keys(reviews).map(Number);
+                currentSlide = slideNumbers.length > 0 ? Math.max(...slideNumbers) + 1 : 1;
+                if (currentSlide > totalSlides) {
+                    currentSlide = totalSlides;
+                }
+                
+                document.getElementById('slide-number').value = currentSlide;
+                updateProgress();
+                
+                // Show notification that review was loaded
+                document.getElementById('save-notification').textContent = 'Previous review loaded successfully.';
+                document.getElementById('save-notification').className = 'notification success';
+                document.getElementById('save-notification').style.display = 'block';
+                
+                // Auto-hide notification after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('save-notification').style.display = 'none';
+                }, 5000);
+            } else {
+                alert(`No saved review found for "${projectToLoad}"`);
+            }
+        }
+        
+        // Download the review report as TXT
+        function downloadReport() {
+            let content = generateReportContent();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${projectName}_${new Date().toLocaleDateString().replace(/\//g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        // Download current progress as TXT
+        function downloadCurrentProgress() {
+            let content = generateReportContent();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${projectName}_progress_${new Date().toLocaleDateString().replace(/\//g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            document.getElementById('slide-status').textContent = 'Progress saved to file';
+            setTimeout(() => {
+                document.getElementById('slide-status').textContent = '';
+            }, 2000);
+        }
+        
+        // Generate the report content
+        function generateReportContent() {
+            let content = `Slide Review Report: ${projectName}\n`;
+            content += `Date: ${new Date().toLocaleDateString()}\n`;
+            content += `Total Slides: ${totalSlides}\n`;
+            content += `Slides Reviewed: ${Object.keys(reviews).length}\n`;
+            content += `Slides OK: ${slidesOk}\n`;
+            content += `Slides With Remarks: ${slidesWithRemarks}\n\n`;
+            content += `Detailed Feedback:\n`;
+            
+            // Sort slide numbers numerically
+            const slideNumbers = Object.keys(reviews).map(Number).sort((a, b) => a - b);
+            
+            for (const slideNum of slideNumbers) {
+                const review = reviews[slideNum];
+                // Removed timestamp display as requested
+                content += `[Slide ${slideNum}]: ${review.feedback}\n`;
+            }
+            
+            return content;
+        }
+        
+        // Import a review from a text file
+        function importReviewFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseImportedFile(content);
+            };
+            reader.readAsText(file);
+        }
+        
+        // Parse the imported file content
+        function parseImportedFile(content) {
+            try {
+                // First, check if it's one of our exported files
+                const lines = content.split('\n');
+                
+                if (lines.length < 5) {
+                    alert('Invalid file format');
+                    return;
+                }
+                
+                // Try to extract project name from first line
+                const projectNameMatch = lines[0].match(/Slide Review Report: (.+)/);
+                if (projectNameMatch) {
+                    projectName = projectNameMatch[1];
+                }
+                
+                // Try to extract total slides
+                const totalSlidesMatch = lines[2].match(/Total Slides: (\d+)/);
+                if (totalSlidesMatch) {
+                    totalSlides = parseInt(totalSlidesMatch[1]);
+                }
+                
+                // Reset review data
+                reviews = {};
+                slidesOk = 0;
+                slidesWithRemarks = 0;
+                
+                // Start parsing from the "Detailed Feedback:" section
+                let detailsIndex = lines.findIndex(line => line.trim() === 'Detailed Feedback:');
+                if (detailsIndex === -1) {
+                    alert('Could not find slide details in file');
+                    return;
+                }
+                
+                // Parse slide reviews
+                for (let i = detailsIndex + 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // Parse "[Slide X]: Feedback" format (without timestamp)
+                    const slideMatch = line.match(/\[Slide (\d+)\]: (.+)/);
+                    if (slideMatch) {
+                        const slideNum = parseInt(slideMatch[1]);
+                        const feedback = slideMatch[2];
+                        
+                        // Add to reviews object
+                        reviews[slideNum] = {
+                            hasRemark: feedback !== 'Everything is Fine',
+                            feedback: feedback
+                        };
+                        
+                        if (feedback === 'Everything is Fine') {
+                            slidesOk++;
+                        } else {
+                            slidesWithRemarks++;
+                        }
+                    }
+                }
+                
+                // Update the UI
+                document.getElementById('project-name').value = projectName;
+                document.getElementById('total-slides').value = totalSlides;
+                
+                // Success message
+                alert(`Successfully imported review for "${projectName}" with ${Object.keys(reviews).length} slides reviewed`);
+                
+                // Save to localStorage
+                saveToLocalStorage();
+                
+                // Start the review from the imported data
+                document.getElementById('setup').style.display = 'none';
+                document.getElementById('review-form').style.display = 'block';
+                
+                // Find next slide to review
+                const slideNumbers = Object.keys(reviews).map(Number);
+                currentSlide = slideNumbers.length > 0 ? Math.max(...slideNumbers) + 1 : 1;
+                if (currentSlide > totalSlides) {
+                    currentSlide = totalSlides;
+                }
+                
+                document.getElementById('slide-number').value = currentSlide;
+                updateProgress();
+                
+            } catch (error) {
+                console.error('Error parsing file:', error);
+                alert('Error importing file. Please check the file format.');
+            }
+        }
+        
+        // Set up the file input change listener
+        document.getElementById('file-input').addEventListener('change', importReviewFromFile);
+        
+        // Reset the app to start a new review
+        function resetApp() {
+            document.getElementById('review-complete').style.display = 'none';
+            document.getElementById('setup').style.display = 'block';
+            document.getElementById('total-slides').value = totalSlides;
+        }
+        
+        // Check for existing review on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we have a saved review in localStorage
+            const savedProjects = Object.keys(localStorage)
+                .filter(key => key.startsWith('slideReview_'))
+                .map(key => key.replace('slideReview_', ''));
+            
+            if (savedProjects.length > 0) {
+                // Just use the most recent project as default
+                const mostRecentProject = savedProjects[0];
+                document.getElementById('project-name').value = mostRecentProject;
+            }
+        });
+    </script>
+</body>
+</html>
